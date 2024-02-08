@@ -7,15 +7,17 @@ import {
     Flex,
     Spacer,
     Heading,
+    Input,
 } from "@chakra-ui/react"
 import { useEffect, useState } from "react"
-import { PublicKey, Transaction } from "@solana/web3.js"
+import { Keypair, PublicKey, Transaction } from "@solana/web3.js"
 import { useWallet } from "@solana/wallet-adapter-react"
 import WalletMultiButton from "@/components/WalletMultiButton"
 import {
     program,
     connection,
     globalLevel1GameDataAccount,
+    pierProgram,
 } from "@/utils/anchor"
 
 type GameDataAccount = {
@@ -24,6 +26,8 @@ type GameDataAccount = {
 
 export default function Home() {
     const { publicKey, sendTransaction } = useWallet()
+
+    const [myKey, setMyKey] = useState<string>("");
 
     const [loadingInitialize, setLoadingInitialize] = useState(false)
     const [loadingRight, setLoadingRight] = useState(false)
@@ -151,6 +155,35 @@ export default function Home() {
         }
     }
 
+    async function handleInitializePier() {
+        console.log("aaaaa")
+        if (publicKey) {
+            const transaction = pierProgram.methods
+                .initialize()
+                .accounts({
+                    signer: publicKey
+                })
+                .transaction()
+            await sendAndConfirmTransaction(() => transaction, setLoadingInitialize)
+        } else {
+            // try {
+            //     const response = await fetch("/api/sendTransaction", {
+            //         method: "POST",
+            //         headers: { "Content-Type": "application/json" },
+            //         body: JSON.stringify({ instruction: "initialize" }),
+            //     })
+            //     const data = await response.json()
+            //     console.log(data)
+            // } catch (error) {
+            //     console.error(error)
+            // }
+        }
+    }
+
+    async function handleCreateBook() {
+        
+    }
+
     async function sendAndConfirmTransaction(
         transactionBuilder: () => Promise<Transaction>,
         setLoading: (loading: boolean) => void
@@ -247,6 +280,23 @@ export default function Home() {
                     >
                         Initialize
                     </Button>
+                    <Button onClick={handleInitializePier}>
+                        Initialize pier
+                    </Button>
+
+                    <Button onClick={handleCreateBook}>
+                        Create Book
+                    </Button>
+
+                    <div>
+                        <Input onChange={(e) => {setMyKey(e.target.value)}}/>
+                    </div>
+                    <Button onClick={
+                        () => {
+                            const keypair = Keypair.fromSecretKey(Uint8Array.from(JSON.parse(myKey).map(Number)))
+                            console.log(keypair.publicKey.toString())
+                        }
+                    }>Get pubkey</Button>
                 </VStack>
             </VStack>
         </Box>

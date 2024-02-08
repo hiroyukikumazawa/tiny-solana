@@ -85,7 +85,7 @@ export type Pier = {
     }
 };
 
-export const IDL: Pier = {
+export const Pier: Pier = {
     "version": "0.1.0",
     "name": "pier",
     "instructions": [
