@@ -10,14 +10,24 @@ import {
     Input,
 } from "@chakra-ui/react"
 import { useEffect, useState } from "react"
-import { Keypair, PublicKey, Transaction } from "@solana/web3.js"
+import { Keypair, PublicKey, SystemProgram, Transaction } from "@solana/web3.js"
 import { useWallet } from "@solana/wallet-adapter-react"
 import WalletMultiButton from "@/components/WalletMultiButton"
+import { BN } from "@project-serum/anchor"
+import {
+    Program,
+    AnchorProvider,
+    Idl,
+    setProvider,
+} from "@project-serum/anchor"
+import { IDL, TinyAdventure } from "../idl/tiny_adventure"
+
 import {
     program,
     connection,
     globalLevel1GameDataAccount,
     pierProgram,
+    testAccount,
 } from "@/utils/anchor"
 
 type GameDataAccount = {
@@ -80,10 +90,19 @@ export default function Home() {
 
     async function handleClickInitialize() {
         if (publicKey) {
+            const programId = new PublicKey("CMUsDN8pAEagaTBNnjbdyxgVg4TqRRCkYKeifV9wFFCf")
+            const program = new Program(
+                IDL as Idl,
+                programId
+            ) as unknown as Program<TinyAdventure>
+            const [asdfasdf] = PublicKey.findProgramAddressSync(
+                [Buffer.from("level1", "utf8"), publicKey.toBuffer()],
+                programId
+            )
             const transaction = program.methods
                 .initialize()
                 .accounts({
-                    newGameDataAccount: globalLevel1GameDataAccount,
+                    newGameDataAccount: asdfasdf,
                     signer: publicKey,
                 })
                 .transaction()
@@ -101,6 +120,21 @@ export default function Home() {
             } catch (error) {
                 console.error(error)
             }
+        }
+    }
+
+    async function handleTestInitialize() {
+        if (publicKey) {
+            const transaction = pierProgram.methods
+                .test(
+                    publicKey, new BN(30)
+                )
+                .accounts({
+                    testAccount: testAccount,
+                    signer: publicKey
+                })
+                .transaction()
+            await sendAndConfirmTransaction(() => transaction, setLoadingInitialize)
         }
     }
 
@@ -159,10 +193,10 @@ export default function Home() {
         console.log("aaaaa")
         if (publicKey) {
             const transaction = pierProgram.methods
-                .initialize()
-                .accounts({
-                    signer: publicKey
-                })
+                .initialize(publicKey)
+                // .accounts({
+                //     signer: publicKey
+                // })
                 .transaction()
             await sendAndConfirmTransaction(() => transaction, setLoadingInitialize)
         } else {
@@ -180,8 +214,27 @@ export default function Home() {
         }
     }
 
+    // [{ name: "sellAddress"; type: "publicKey"; }, { name: "sellAmount"; type: "u64"; }, { name: "paymentAddress"; type: "publicKey"; }, { name: "paymentAmount"; type: "u64"; }]
     async function handleCreateBook() {
-        
+        console.log('bbbbbbb')
+        const bookKeyPair = Keypair.generate()
+        if (publicKey) {
+            const transaction = pierProgram.methods
+                .create(
+                    publicKey,
+                    new BN(4000),
+                    publicKey,
+                    new BN(3000),
+                ).accounts({
+                    book: bookKeyPair.publicKey,
+                    signer: publicKey
+                })
+                .transaction()
+            await sendAndConfirmTransaction(() => transaction, setLoadingInitialize)
+            // .accounts({
+            //     // signer: publicKey
+            // })
+        }
     }
 
     async function sendAndConfirmTransaction(
@@ -288,8 +341,10 @@ export default function Home() {
                         Create Book
                     </Button>
 
+                    <Button onClick={handleTestInitialize}>Test</Button>
+
                     <div>
-                        <Input onChange={(e) => {setMyKey(e.target.value)}}/>
+                        <Input onChange={(e) => { setMyKey(e.target.value) }} />
                     </div>
                     <Button onClick={
                         () => {

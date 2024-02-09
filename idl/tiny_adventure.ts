@@ -61,7 +61,7 @@ export type TinyAdventure = {
     }
   ],
   "metadata": {
-    "address": "3omiHNy7JNqPpoVGAtHLmn6WVArH13WaKGEFGJdHCwSU"
+    "address": "CMUsDN8pAEagaTBNnjbdyxgVg4TqRRCkYKeifV9wFFCf"
   }
 };
 
@@ -128,6 +128,6 @@ export const IDL: TinyAdventure = {
     }
   ],
   "metadata": {
-    "address": "3omiHNy7JNqPpoVGAtHLmn6WVArH13WaKGEFGJdHCwSU"
+    "address": "CMUsDN8pAEagaTBNnjbdyxgVg4TqRRCkYKeifV9wFFCf"
   }
 };

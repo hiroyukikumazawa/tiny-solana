@@ -24,9 +24,9 @@ const provider = new AnchorProvider(connection, wallet, {})
 setProvider(provider)
 
 // Tiny Adventure program ID
-const programId = new PublicKey("H199AQZps28Ma6mvtb2YKtm8pGGMvU2SYVhKznQddZLF")
+const programId = new PublicKey("CMUsDN8pAEagaTBNnjbdyxgVg4TqRRCkYKeifV9wFFCf")
 
-const pierProgramId = new PublicKey("4FGaoyoUkc2FrHrMgQghiicBvFXJ4pMjAztdophjmeyv")
+const pierProgramId = new PublicKey("AMy3eYbWzhYhXskNPCefUJ6BUyqH53LP4TrsRj5o6ffq")
 
 export const program = new Program(
   IDL as Idl,
@@ -42,4 +42,10 @@ export const pierProgram = new Program(
 export const [globalLevel1GameDataAccount] = PublicKey.findProgramAddressSync(
   [Buffer.from("level1", "utf8")],
   programId
+)
+
+export const [testAccount] = PublicKey
+.findProgramAddressSync(
+  [Buffer.from("test", "utf8")],
+  pierProgramId
 )
